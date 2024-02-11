@@ -30,6 +30,7 @@ class SearchResultsViewController: UIViewController {
         view.addSubview(searchResultsCollectionView)
         searchResultsCollectionView.delegate = self
         searchResultsCollectionView.dataSource = self
+        APICaller.shared.viewController = self
     }
 
     override func viewDidLayoutSubviews() {

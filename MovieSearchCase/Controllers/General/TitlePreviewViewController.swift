@@ -39,6 +39,8 @@ class TitlePreviewViewController: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(overviewLabel)
         configureConstraints()
+        APICaller.shared.viewController = self
+
     }
 
     func configureConstraints() {

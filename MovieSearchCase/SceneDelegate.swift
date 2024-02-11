@@ -6,19 +6,39 @@
 //
 
 import UIKit
+import Alamofire
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
+    
     var window: UIWindow?
-
-
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
-        window?.rootViewController = MainTabBarViewController()
+        
+        let splashViewController = SplashViewController()
+        window?.rootViewController = splashViewController
         window?.makeKeyAndVisible()
+        
+        if !isConnectedToNetwork() {
+            showNoInternetAlert()
+            return
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            let mainTabBarController = MainTabBarViewController()
+            self.window?.rootViewController = mainTabBarController
+        }
+    }
+    private func showNoInternetAlert() {
+        let alert = UIAlertController(title: "Internet Connection Error", message: "You are not connected to the internet.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        window?.rootViewController?.present(alert, animated: true, completion: nil)
+    }
+    
+    private func isConnectedToNetwork() -> Bool {
+        return NetworkReachabilityManager()?.isReachable ?? false
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -48,7 +68,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
-
-
 }
-

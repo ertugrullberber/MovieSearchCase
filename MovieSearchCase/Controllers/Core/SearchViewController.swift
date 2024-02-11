@@ -34,27 +34,8 @@ class SearchViewController: UIViewController {
         discoverTable.dataSource = self
         navigationItem.searchController = searchController
         navigationController?.navigationBar.tintColor = .white
-        fetchDiscoverMovies()
         searchController.searchResultsUpdater = self
-    }
-
-    private func fetchDiscoverMovies() {
-        APICaller.shared.getDiscoverMovies { [weak self] result in
-            switch result {
-            case .success(let titles):
-                self?.titles = titles
-                DispatchQueue.main.async {
-                    self?.discoverTable.reloadData()
-                }
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        discoverTable.frame = view.bounds
+        APICaller.shared.viewController = self
     }
 }
 
@@ -129,7 +110,6 @@ extension SearchViewController: UISearchResultsUpdating, SearchResultsViewContro
     }
 
     func searchResultsViewControllerDidTapItem(_ viewModel: TitlePreviewViewModel) {
-        
         DispatchQueue.main.async { [weak self] in
             let vc = TitlePreviewViewController()
             vc.configure(with: viewModel)

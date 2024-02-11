@@ -7,6 +7,7 @@
 
 import Foundation
 import Alamofire
+import UIKit
 
 struct Constants {
     static let API_KEY = "35e3684bbfeca8df762ca9b0c4534e73"
@@ -21,7 +22,31 @@ enum APIError: Error {
 
 class APICaller {
     static let shared = APICaller()
-    
+    weak var viewController: UIViewController?
+    var loadingIndicator: UIActivityIndicatorView?
+
+    func showLoadingIndicator() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            let loadingView = UIActivityIndicatorView(style: .large)
+            loadingView.center = self.viewController?.view.center ?? CGPoint(x: 0, y: 0)
+            loadingView.startAnimating()
+            self.viewController?.view.addSubview(loadingView)
+            self.loadingIndicator = loadingView
+        }
+    }
+
+    func hideLoadingIndicator() {
+        DispatchQueue.main.async {
+            self.loadingIndicator?.removeFromSuperview()
+            self.loadingIndicator = nil
+        }
+    }
+
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        viewController?.present(alert, animated: true, completion: nil)
+    }
 
     func getTrendingMovies(completion: @escaping (Result<[Title], Error>) -> Void) {
         let url = "\(Constants.baseURL)/3/trending/movie/day"
@@ -33,6 +58,7 @@ class APICaller {
                 completion(.success(result.results))
             case .failure(let error):
                 completion(.failure(error))
+                self.showAlert(title: "Internet Bağlantı Hatası", message: "")
             }
         }
     }
@@ -47,6 +73,7 @@ class APICaller {
                 completion(.success(result.results))
             case .failure(let error):
                 completion(.failure(error))
+                self.showAlert(title: "Internet Bağlantı Hatası", message: "")
             }
         }
     }
@@ -61,6 +88,7 @@ class APICaller {
                 completion(.success(result.results))
             case .failure(let error):
                 completion(.failure(error))
+                self.showAlert(title: "Internet Bağlantı Hatası", message: "")
             }
         }
     }
@@ -75,6 +103,7 @@ class APICaller {
                 completion(.success(result.results))
             case .failure(let error):
                 completion(.failure(error))
+                self.showAlert(title: "Internet Bağlantı Hatası", message: "")
             }
         }
     }
@@ -89,6 +118,7 @@ class APICaller {
                 completion(.success(result.results))
             case .failure(let error):
                 completion(.failure(error))
+                self.showAlert(title: "Internet Bağlantı Hatası", message: "")
             }
         }
     }
@@ -111,11 +141,13 @@ class APICaller {
                 completion(.success(result.results))
             case .failure(let error):
                 completion(.failure(error))
+                self.showAlert(title: "Internet Bağlantı Hatası", message: "")
             }
         }
     }
 
     func search(with query: String, completion: @escaping (Result<[Title], Error>) -> Void) {
+        showLoadingIndicator()
         guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
         let url = "\(Constants.baseURL)/3/search/movie"
         let parameters: [String: Any] = ["api_key": Constants.API_KEY, "query": query]
@@ -123,9 +155,11 @@ class APICaller {
         AF.request(url, parameters: parameters).responseDecodable(of: TrendingTitleResponse.self) { response in
             switch response.result {
             case .success(let result):
+                self.hideLoadingIndicator()
                 completion(.success(result.results))
             case .failure(let error):
                 completion(.failure(error))
+                self.showAlert(title: "Internet Bağlantı Hatası", message: "")
             }
         }
     }
@@ -141,6 +175,7 @@ class APICaller {
                 completion(.success(result.items[0]))
             case .failure(let error):
                 completion(.failure(error))
+                self.showAlert(title: "Internet Bağlantı Hatası", message: "")
             }
         }
     }
