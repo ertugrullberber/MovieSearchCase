@@ -13,25 +13,27 @@ class TitlePreviewViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 22, weight: .bold)
-        label.text = "Harry potter"
+        label.text = ""
+        label.textColor = .darkGray
         return label
     }()
-    
+
     private let overviewLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .regular)
+        label.font = .systemFont(ofSize: 17, weight: .regular)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
-        label.text = "This is the best movie ever to watch as a kid!"
+        label.text = ""
+        label.textColor = .darkGray
         return label
     }()
-    
+
     private let webView: WKWebView = {
         let webView = WKWebView()
         webView.translatesAutoresizingMaskIntoConstraints = false
         return webView
     }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -40,7 +42,14 @@ class TitlePreviewViewController: UIViewController {
         view.addSubview(overviewLabel)
         configureConstraints()
         APICaller.shared.viewController = self
-
+        configureNavbar()
+    }
+    private func configureNavbar() {
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: self, action: nil),
+            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: self, action: nil)
+        ]
+        navigationController?.navigationBar.tintColor = .darkGray
     }
 
     func configureConstraints() {
@@ -67,7 +76,7 @@ class TitlePreviewViewController: UIViewController {
         NSLayoutConstraint.activate(overviewLabelConstraints)
         
     }
-    
+
     public func configure(with model: TitlePreviewViewModel) {
         titleLabel.text = model.title
         overviewLabel.text = model.titleOverview
