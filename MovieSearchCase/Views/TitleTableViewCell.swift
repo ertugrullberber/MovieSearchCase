@@ -8,7 +8,6 @@
 import UIKit
 
 class TitleTableViewCell: UITableViewCell {
-
     static let identifier = "TitleTableViewCell"
 
     private let playTitleButton: UIButton = {
